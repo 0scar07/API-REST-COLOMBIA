@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Barranquilla – Datos</title>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 16px 48px;
+      background: #f0f2f5;
+      color: #1a1a2e;
+    }
+
+    /* HEADER */
+    .header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+      color: #fff;
+      padding: 40px 32px 32px;
+      margin: 0 -16px 32px;
+      border-bottom: 4px solid #e63946;
+    }
+    .header h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.5px; }
+    .header p  { color: #a0aec0; font-size: 0.88rem; margin-top: 6px; }
+    .header a  { color: #63b3ed; text-decoration: none; }
+    .header a:hover { text-decoration: underline; }
+
+    /* STAT CARDS */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 18px 14px;
+      text-align: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,.07);
+      border-top: 3px solid #e63946;
+    }
+    .card .val { font-size: 1.7rem; font-weight: 700; color: #0f3460; }
+    .card .lbl { font-size: 0.7rem; text-transform: uppercase; letter-spacing: .06em; color: #718096; margin-top: 5px; }
+
+    /* SECTION HEADING */
+    h2 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #4a5568;
+      margin: 28px 0 12px;
+      padding-left: 10px;
+      border-left: 3px solid #e63946;
+    }
+
+    /* CHART WRAPPER */
+    .chart {
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.07);
+    }
+
+    /* TOURIST GRID */
+    .tur-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .tur-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 18px;
+      box-shadow: 0 1px 4px rgba(0,0,0,.07);
+      border-bottom: 3px solid #e2e8f0;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .tur-card:hover {
+      border-color: #e63946;
+      box-shadow: 0 4px 12px rgba(0,0,0,.1);
+    }
+    .tur-card .tur-name { font-weight: 600; font-size: 0.92rem; margin-bottom: 7px; color: #1a1a2e; }
+    .tur-card .tur-desc { font-size: 0.8rem; color: #718096; line-height: 1.55; margin-bottom: 12px; }
+    .tur-card .tur-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+    .tag {
+      font-size: 0.68rem;
+      padding: 2px 9px;
+      border-radius: 99px;
+      border: 1px solid #e2e8f0;
+      color: #718096;
+      background: #f7fafc;
+    }
+    .tag.cat { background: #ebf8ff; border-color: #bee3f8; color: #2b6cb0; font-weight: 500; }
+
+    /* TABLE */
+    table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.07); }
+    th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid #edf2f7; font-size: 0.85rem; }
+    th { background: #f7fafc; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: .05em; color: #4a5568; }
+    tr:last-child td { border-bottom: none; }
+
+    /* DEBUG */
+    #debug { background:#fffbeb; border:1px solid #f6e05e; border-radius:8px; padding:12px; font-size:0.73rem; color:#744210; margin-bottom:20px; display:none; }
+
+    /* FOOTER */
+    footer {
+      margin-top: 48px;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 20px;
+      font-size: 0.78rem;
+      color: #a0aec0;
+      text-align: center;
+      line-height: 1.8;
+    }
+    footer a { color: #718096; text-decoration: none; }
+    footer a:hover { color: #e63946; }
+    footer strong { color: #4a5568; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Barranquilla</h1>
+  <p>Datos desde <a href="https://api-colombia.com" target="_blank">api-colombia.com</a> · La Puerta de Oro de Colombia</p>
+</div>
+
+<div id="debug"></div>
+
+<div class="cards">
+  <div class="card"><div class="val" id="sAlt">—</div><div class="lbl">Altitud (m)</div></div>
+  <div class="card"><div class="val">1.2M</div><div class="lbl">Población</div></div>
+  <div class="card"><div class="val">154</div><div class="lbl">Área km²</div></div>
+  <div class="card"><div class="val" id="sAir">—</div><div class="lbl">Aeropuertos</div></div>
+  <div class="card"><div class="val" id="sTur">—</div><div class="lbl">Atracciones</div></div>
+</div>
+
+<h2>Aeropuertos en Barranquilla</h2>
+<div class="chart"><div id="chartAir" style="height:220px"></div></div>
+
+<h2>Atracciones Turísticas por Categoría</h2>
+<div class="chart"><div id="chartTurCat" style="height:280px"></div></div>
+
+<h2>Atracciones por Categoría</h2>
+<div class="chart"><div id="chartTurBar" style="height:300px"></div></div>
+
+<h2>Listado de Aeropuertos</h2>
+<table id="tblAir">
+  <thead><tr><th>Nombre</th><th>IATA</th><th>OACI</th><th>Tipo</th></tr></thead>
+  <tbody></tbody>
+</table>
+
+<h2>Atracciones Turísticas</h2>
+<div class="tur-grid" id="turGrid"></div>
+
+<footer>
+  Datos: <a href="https://api-colombia.com" target="_blank">api-colombia.com</a> &nbsp;·&nbsp;
+  Gráficos: <a href="https://plotly.com/javascript/" target="_blank">Plotly.js</a> &nbsp;·&nbsp;
+  © 2025 Barranquilla &nbsp;·&nbsp; Hecho por <strong>Oscar</strong>
+</footer>
+
+<script>
+const BASE = 'https://api-colombia.com/api/v1';
+const COLORS = ['#e63946','#457b9d','#2a9d8f','#e9c46a','#f4a261','#6d6875','#264653','#a8dadc'];
+
+const FALLBACK_AIRPORTS = [
+  { name:'Aeropuerto Internacional Ernesto Cortissoz', iata:'BAQ', oaci:'SKBQ', type:'Internacional', city:'Barranquilla' },
+];
+const FALLBACK_TOURIST = [
+  { name:'Carnaval de Barranquilla', category:'Patrimonio Cultural', city:'Barranquilla', description:'Declarado Patrimonio Oral e Inmaterial de la Humanidad por la UNESCO. Es el segundo carnaval más grande del mundo.' },
+  { name:'Museo del Caribe', category:'Museo', city:'Barranquilla', description:'Espacio interactivo dedicado a la historia, cultura y biodiversidad de la región Caribe colombiana.' },
+  { name:'Estadio Metropolitano Roberto Meléndez', category:'Deportivo', city:'Barranquilla', description:'El estadio de fútbol con mayor capacidad de Colombia, sede de la Selección y del Junior.' },
+  { name:'Barrio El Prado', category:'Histórico', city:'Barranquilla', description:'Primer barrio planificado de Colombia, declarado Bien de Interés Cultural.' },
+  { name:'Malecón del Río', category:'Parque / Mirador', city:'Barranquilla', description:'Paseo peatonal a orillas del río Magdalena, ideal para disfrutar el atardecer.' },
+  { name:'Zoológico de Barranquilla', category:'Ecoturismo', city:'Barranquilla', description:'Hogar de más de 900 animales de 170 especies entre mamíferos, aves y reptiles.' },
+  { name:'Plaza de la Paz', category:'Religioso / Cultural', city:'Barranquilla', description:'Catedral María Reina, ícono arquitectónico moderno y punto de encuentro ciudadano.' },
+  { name:'Casa del Carnaval', category:'Museo', city:'Barranquilla', description:'Museo que preserva la memoria del Carnaval con trajes, máscaras y archivos históricos.' },
+  { name:'Mundo Marino', category:'Ecoturismo', city:'Barranquilla', description:'Acuario con especies marinas del Caribe: tortugas, tiburones y exhibiciones educativas.' },
+  { name:'La Cueva Bar', category:'Cultura / Historia', city:'Barranquilla', description:'Bar icónico frecuentado por García Márquez y otros intelectuales del siglo XX.' },
+  { name:'Parque Cultural del Caribe', category:'Parque / Cultural', city:'Barranquilla', description:'Complejo cultural con jardines y espacios de eventos. Centro neurálgico de la vida cultural.' },
+  { name:'Paseo Bolívar', category:'Histórico', city:'Barranquilla', description:'Principal avenida histórica del centro con edificios patrimonio y vida comercial.' },
+];
+
+function isBarranquilla(item) {
+  const fields = [item.city, item.cityName, item.municipio, item.municipality, item.nombre, item.name, item.departamento, item.department]
+    .filter(Boolean).map(v => v.toString().toLowerCase());
+  return fields.some(f => f.includes('barranquilla'));
+}
+
+async function safeFetch(url) {
+  try {
+    const r = await fetch(url);
+    if (!r.ok) return null;
+    return await r.json();
+  } catch { return null; }
+}
+
+function debug(msg) {
+  const el = document.getElementById('debug');
+  el.style.display = 'block';
+  el.innerHTML += msg + '<br>';
+}
+
+async function init() {
+  const [cities, allAir, allTur] = await Promise.all([
+    safeFetch(`${BASE}/City/search/Barranquilla`),
+    safeFetch(`${BASE}/Airport`),
+    safeFetch(`${BASE}/TouristicAttraction`),
+  ]);
+
+  const city = Array.isArray(cities) ? cities[0] : (cities || {});
+  const apiAirports = Array.isArray(allAir) ? allAir.filter(isBarranquilla) : [];
+  const apiTourist  = Array.isArray(allTur)  ? allTur.filter(isBarranquilla) : [];
+
+  if (apiTourist.length)  debug('✓ ' + apiTourist.length + ' atracciones desde la API.');
+  if (apiAirports.length) debug('✓ ' + apiAirports.length + ' aeropuertos desde la API.');
+
+  const airports = apiAirports.length ? apiAirports : FALLBACK_AIRPORTS;
+  const tourist  = apiTourist.length  ? apiTourist  : FALLBACK_TOURIST;
+
+  document.getElementById('sAlt').textContent = city?.altitude ?? 18;
+  document.getElementById('sAir').textContent = airports.length;
+  document.getElementById('sTur').textContent = tourist.length;
+
+  const layout = { paper_bgcolor:'transparent', plot_bgcolor:'transparent', font:{family:'Inter,sans-serif', size:12, color:'#4a5568'} };
+
+  Plotly.newPlot('chartAir', [{
+    type:'bar',
+    x: airports.map(a => a.name||a.nombre||a.oaci),
+    y: airports.map(() => 1),
+    text: airports.map(a => `IATA: ${a.iata||'—'} · OACI: ${a.oaci||'—'} · ${a.type||a.tipo||'—'}`),
+    textposition: 'none',
+    marker: { color: COLORS, opacity: 0.85 },
+    width: airports.length === 1 ? [0.2] : undefined,
+    hovertemplate: '<b>%{x}</b><br>%{text}<extra></extra>'
+  }], {
+    ...layout,
+    margin:{t:10,b:120,l:30,r:30},
+    xaxis:{ tickangle:-25, automargin:true },
+    yaxis:{ showticklabels:false, showgrid:false, range:[0,1.5] },
+    bargap: 0.7
+  }, { responsive:true, displayModeBar:false });
+
+  const cats = {};
+  tourist.forEach(t => { const c = t.category||t.categoria||t.type||t.tipo||'Otro'; cats[c]=(cats[c]||0)+1; });
+
+  Plotly.newPlot('chartTurCat', [{
+    type:'pie', labels:Object.keys(cats), values:Object.values(cats),
+    marker:{colors:COLORS}, hole:0.4, textinfo:'label+value',
+  }], { ...layout, margin:{t:10,b:40,l:10,r:10}, showlegend:true, legend:{orientation:'h',y:-0.15} },
+  { responsive:true, displayModeBar:false });
+
+  const sorted = Object.entries(cats).sort((a,b)=>b[1]-a[1]);
+  Plotly.newPlot('chartTurBar', [{
+    type:'bar', orientation:'h',
+    y: sorted.map(e=>e[0]), x: sorted.map(e=>e[1]),
+    marker:{color:COLORS.slice(0,sorted.length)},
+    hovertemplate:'<b>%{y}</b>: %{x}<extra></extra>'
+  }], { ...layout, margin:{t:10,b:30,l:160,r:30}, xaxis:{gridcolor:'#edf2f7',zeroline:false,dtick:1}, yaxis:{showgrid:false} },
+  { responsive:true, displayModeBar:false });
+
+  airports.forEach(a => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${a.name||a.nombre||'—'}</td><td>${a.iata||'—'}</td><td>${a.oaci||'—'}</td><td>${a.type||a.tipo||'—'}</td>`;
+    document.querySelector('#tblAir tbody').appendChild(tr);
+  });
+
+  tourist.forEach(t => {
+    const name = t.name||t.nombre||'—';
+    const desc = t.description||t.descripcion||'Sin descripción disponible.';
+    const cat  = t.category||t.categoria||t.type||'';
+    const cityName = t.city||t.cityName||t.municipio||'';
+    const div = document.createElement('div');
+    div.className = 'tur-card';
+    div.innerHTML = `
+      <div class="tur-name">${name}</div>
+      <div class="tur-desc">${desc.slice(0,160)}${desc.length>160?'…':''}</div>
+      <div class="tur-tags">
+        ${cat      ? `<span class="tag cat">${cat}</span>` : ''}
+        ${cityName ? `<span class="tag">${cityName}</span>` : ''}
+      </div>`;
+    document.getElementById('turGrid').appendChild(div);
+  });
+}
+
+init();
+</script>
+</body>
+</html>
